@@ -1,0 +1,18 @@
+{
+  "name": "term-paper-back-end",
+  "version": "1.0.0",
+  "description": "back end part of term paper project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "development": "nodemon server.js"
+  },
+  "author": "Andrii Polishko",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^6.7.2"
+  }
+}
