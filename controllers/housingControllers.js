@@ -1,10 +1,10 @@
-const expressAsyncHandler = require('express-async-handler');
+const asyncHandler = require('express-async-handler');
 const Housing = require('../models/housingModel');
-const { options } = require('../routes/housingRoutes');
+
 //@desc get housings
 //@route GET /api/housing
 //@access Public
-const getHousing = expressAsyncHandler(async (req, res) => {
+const getHousing = asyncHandler(async (req, res) => {
   const housings = await Housing.find();
   res.json({ housings });
 });
@@ -12,10 +12,10 @@ const getHousing = expressAsyncHandler(async (req, res) => {
 //@desc set housings
 //@route Post /api/housing
 //@access Public
-const setHousing = expressAsyncHandler(async (req, res) => {
+const setHousing = asyncHandler(async (req, res) => {
   const body = req.body;
   if (!body.name || !body.city || !body.type) {
-    res.status(500);
+    res.status(400);
     throw new Error('Please supply all needed fields');
   }
 
@@ -31,18 +31,22 @@ const setHousing = expressAsyncHandler(async (req, res) => {
 //@desc update housings
 //@route Put /api/housing/:id
 //@access Public
-const updateHousing = expressAsyncHandler(async (req, res) => {
+const updateHousing = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const updatedHousing = await Housing.findByIdAndUpdate(id, req.body, {
-    new: true,
-  });
+  const housing = await Housing.findById(id);
+  if (!housing) {
+    res.status(400);
+    throw new Error('Housing now found');
+  }
+  const updatedHousing = await Housing.findByIdAndUpdate(id, req.body);
+
   res.json(updatedHousing);
 });
 
 //@desc delete housings
 //@route Put /api/housing/:id
 //@access Public
-const deleteHousing = expressAsyncHandler(async (req, res) => {
+const deleteHousing = asyncHandler(async (req, res) => {
   const id = req.params.id;
   if (!(await Housing.findById(id))) {
     res.status(400);

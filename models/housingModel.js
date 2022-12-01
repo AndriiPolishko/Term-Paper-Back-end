@@ -6,7 +6,7 @@ const housingModel = mongoose.Schema(
     city: { type: String, required: true },
     type: { type: String, required: true },
   },
-  { typestamps: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Housing', housingModel);

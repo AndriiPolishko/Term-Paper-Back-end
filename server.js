@@ -12,7 +12,8 @@ app.use(express.json()); // middleware that enables usage of raw json in body
 app.use(express.urlencoded({ extended: false })); // middleware that enables usage of urlEncoded in body
 
 app.use('/api/housing', require('./routes/housingRoutes.js'));
-
+app.use('/api/user', require('./routes/userRoutes'));
+app.use('/api/city', require('./routes/cityRouters'));
 app.use(errorMiddleware);
 
 app.listen(port, () => {
