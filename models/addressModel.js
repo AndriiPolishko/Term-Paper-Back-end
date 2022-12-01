@@ -7,9 +7,13 @@ const addressModel = mongoose.Schema(
       required: [true, 'Please enter the name of the address'],
       unique: true,
     },
+    city: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'City',
+    },
   },
-  { city: { type: mongoose.Schema.Types.ObjectId, required: true } },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Address', mongoose.model(addressModel));
+module.exports = mongoose.model('Address', addressModel);
