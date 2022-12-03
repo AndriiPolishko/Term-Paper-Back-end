@@ -12,4 +12,4 @@ const bureauModel = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Bureau', mongoose.model(bureauModel));
+module.exports = mongoose.model('Bureau', bureauModel);

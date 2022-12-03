@@ -14,8 +14,10 @@ app.use(express.urlencoded({ extended: false })); // middleware that enables usa
 app.use('/api/housing', require('./routes/housingRoutes.js'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/city', require('./routes/cityRouters'));
-
 app.use('/api/address', require('./routes/addressRouters'));
+app.use('/api/bureau', require('./routes/bureauRouters'));
+app.use('/api/realtor', require('./routes/realtorRouters'));
+
 app.use(errorMiddleware);
 
 app.listen(port, () => {
