@@ -7,7 +7,7 @@ CREATE TABLE users (
   city VARCHAR(32),
   email VARCHAR(64),
   password VARCHAR(100),
-  is_admin BOOLEAN
+  is_admin BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE realtors (
@@ -27,5 +27,7 @@ CREATE TABLE housings (
   street VARCHAR(32),
   housing_number VARCHAR(32),
   housing_type VARCHAR(32),
-  price NUMERIC
+  price NUMERIC,
+  owner_id int,
+  CONSTRAINT fk_owner FOREIGN KEY(owner_id) REFERENCES realtors(id)
 );

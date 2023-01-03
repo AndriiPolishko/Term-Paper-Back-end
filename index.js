@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./src/db/db');
+const { errorHandler } = require('./src/middleware/errorMiddleware');
 
 require('dotenv').config();
 
@@ -14,6 +14,8 @@ app.use(express.urlencoded({ extended: false })); // parse application/x-www-for
 app.use('/api/user', require('./src/routes/userRoutes'));
 app.use('/api/housing', require('./src/routes/housingRoutes'));
 app.use('/api/realtor', require('./src/routes/realtorRoutes'));
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
