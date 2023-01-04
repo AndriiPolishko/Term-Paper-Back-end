@@ -77,7 +77,7 @@ const signUp = asyncHandler(async (req, res) => {
   //need to rewrite
   if (!firstName && !secondName && !city && !email && !password) {
     res.status(400);
-    throw new Error("User's info is lacking");
+    throw new Error('No user info given');
   }
 
   const userExists = (
@@ -85,6 +85,7 @@ const signUp = asyncHandler(async (req, res) => {
   ).rows[0];
 
   if (userExists) {
+    console.log('hi');
     res.status(404);
     throw new Error('User already exists');
   }
@@ -101,6 +102,7 @@ const signUp = asyncHandler(async (req, res) => {
       firstName,
       secondName,
       email,
+      city,
       token: generateJWT(user.rows[0].id),
     });
   } else {
@@ -114,17 +116,24 @@ const signUp = asyncHandler(async (req, res) => {
 // @access  PUBLIC
 const logIn = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    res.status(401);
+    throw new Error('All fields have to be provided!');
+  }
   const getUser = await pool.query(`SELECT * FROM users WHERE email = $1`, [
     email,
   ]);
   const user = getUser.rows[0];
   if (user && (await bcrypt.compare(password, user.password))) {
-    const name = `${user.first_name} ${user.second_name}`;
-    res
-      .status(200)
-      .json({ name, email: user.email, token: generateJWT(user.id) });
+    res.status(200).json({
+      firstName: user.first_name,
+      secondName: user.second_name,
+      email: user.email,
+      city: user.city,
+      token: generateJWT(user.id),
+    });
   } else {
-    res.status(400);
+    res.status(401);
     throw new Error('User not found');
   }
 });
