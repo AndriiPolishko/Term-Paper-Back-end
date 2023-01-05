@@ -6,58 +6,6 @@ const asyncHandler = require('express-async-handler');
 const tableName = 'users';
 const database = process.env.DATABASE;
 /*
-
-
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await await (await pool.query('SELECT * FROM users')).rows;
-    res.json(users);
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-// const getUser = async (req, res) => {
-//   const id = req.params.id;
-//   const theUser = await (
-//     await pool.query('SELECT * FROM users WHERE id = ($1)', [id])
-//   ).rows;
-//   res.json(theUser);
-// };
-
-const addUser = async (req, res) => {
-  try {
-    const { firstName, secondName, email, city, password } = req.body;
-    const newUser = await pool.query(
-      `INSERT INTO users (first_name, second_name, city, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [firstName, secondName, email, city, password]
-    );
-
-    res.json(newUser);
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const updateUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { firstName, secondName, email, city, password } = req.body;
-
-    if (firstName)
-      await pool.query(`UPDATE users SET first_name = $1 WHERE id = $2`, [
-        firstName,
-        id,
-      ]);
-    ///
-    /// The rest will be added after addition of JWT
-    ///
-    res.json({ res: 'Updated' });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
 const deleteUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -85,7 +33,6 @@ const signUp = asyncHandler(async (req, res) => {
   ).rows[0];
 
   if (userExists) {
-    console.log('hi');
     res.status(404);
     throw new Error('User already exists');
   }
@@ -99,6 +46,7 @@ const signUp = asyncHandler(async (req, res) => {
   );
   if (user) {
     res.status(201).json({
+      id: user.rows[0].id,
       firstName,
       secondName,
       email,
@@ -126,6 +74,7 @@ const logIn = asyncHandler(async (req, res) => {
   const user = getUser.rows[0];
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
+      id: user.id,
       firstName: user.first_name,
       secondName: user.second_name,
       email: user.email,
@@ -146,9 +95,60 @@ const getUser = async (req, res) => {
   res.json({ first_name, second_name, email });
 };
 
+const updateUser = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    let user;
+
+    const { firstName, secondName, email, city, password } = req.body;
+
+    if (firstName) {
+      await pool.query(`UPDATE users SET first_name = $1 WHERE id = $2`, [
+        firstName,
+        id,
+      ]);
+    }
+
+    if (secondName) {
+      await pool.query(`UPDATE users SET second_name = $1 WHERE id = $2`, [
+        secondName,
+        id,
+      ]);
+    }
+
+    if (email) {
+      await pool.query(`UPDATE users SET email = $1 WHERE id = $2`, [
+        email,
+        id,
+      ]);
+    }
+
+    if (city) {
+      await pool.query(`UPDATE users SET city = $1 WHERE id = $2`, [city, id]);
+    }
+
+    if (!user) {
+      user = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
+    }
+    const userData = user.rows[0];
+    console.log(userData);
+
+    res.status(200).json({
+      firstName: userData.first_name,
+      secondName: userData.second_name,
+      email: userData.email,
+      city: userData.city,
+      token: generateJWT(userData.id),
+    });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
 const generateJWT = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET); // can add third parameter for expiration period, like 30d
 };
 
-//module.exports = { getAllUsers, getUser, addUser, updateUser, deleteUser };
-module.exports = { signUp, logIn, getUser };
+module.exports = { signUp, logIn, getUser, updateUser };

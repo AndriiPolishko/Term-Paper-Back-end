@@ -13,7 +13,6 @@ const protect = asyncHandler(async (req, res, next) => {
         `SELECT first_name, second_name, email, city FROM users WHERE id = $1`,
         [decoded.id]
       );
-      console.log(user.rows[0]);
       req.user = user.rows[0];
       next();
     } catch (error) {
