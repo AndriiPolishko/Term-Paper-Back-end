@@ -33,4 +33,20 @@ const addLikedHousing = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getLikedHousing, addLikedHousing };
+const deleteLikedHousing = asyncHandler(async (req, res) => {
+  try {
+    const { housingId, userId } = req.body;
+    await pool.query(
+      `DELETE FROM ${tableName} WHERE housing_id = $1 AND user_id = $2)`,
+      [housingId, userId]
+    );
+    res
+      .status(200)
+      .json({ message: 'Housing was successfully deleted from liked' });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = { getLikedHousing, addLikedHousing, deleteLikedHousing };

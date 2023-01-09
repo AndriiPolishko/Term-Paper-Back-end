@@ -4,8 +4,13 @@ const router = express.Router();
 const {
   getLikedHousing,
   addLikedHousing,
+  deleteLikedHousing,
 } = require('../controllers/likedHousingControllers');
 
-router.route('/').get(getLikedHousing).post(addLikedHousing);
+router
+  .route('/')
+  .get(getLikedHousing)
+  .post(addLikedHousing)
+  .delete(deleteLikedHousing);
 
 module.exports = router;
