@@ -37,7 +37,7 @@ const deleteLikedHousing = asyncHandler(async (req, res) => {
   try {
     const { housingId, userId } = req.body;
     await pool.query(
-      `DELETE FROM ${tableName} WHERE housing_id = $1 AND user_id = $2)`,
+      `DELETE FROM ${tableName} WHERE housing_id = $1 AND user_id = $2`,
       [housingId, userId]
     );
     res
