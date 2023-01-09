@@ -1,4 +1,4 @@
-CREATE DATABASE termPaper;
+CREATE DATABASE termpaper;
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -30,4 +30,12 @@ CREATE TABLE housings (
   price NUMERIC,
   owner_id int,
   CONSTRAINT fk_owner FOREIGN KEY(owner_id) REFERENCES realtors(id)
+);
+
+CREATE TABLE liked_housings (
+  id SERIAL PRIMARY KEY,
+  housing_id int,
+  user_id int,
+  CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
+  CONSTRAINT fk_housing FOREIGN KEY(housing_id) REFERENCES housings(id)
 );

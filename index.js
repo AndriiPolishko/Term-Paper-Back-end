@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: false })); // parse application/x-www-for
 app.use('/api/user', require('./src/routes/userRoutes'));
 app.use('/api/housing', require('./src/routes/housingRoutes'));
 app.use('/api/realtor', require('./src/routes/realtorRoutes'));
+app.use('/api/liked-housing', require('./src/routes/likedHousingRoutes'));
 
 app.use(errorHandler);
 

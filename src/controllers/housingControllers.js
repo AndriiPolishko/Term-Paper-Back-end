@@ -2,24 +2,39 @@ const pool = require('../db/db');
 
 const getHousings = async (req, res) => {
   try {
-    let { city, price } = req.query;
-    price = price === undefined ? Infinity : price;
-    if (city) {
-      const housings = await pool.query(
-        'SELECT * FROM housings WHERE city = $1 AND price <= $2',
+    const { city, housingType } = req.query;
+    const price = req.query.price === undefined ? Infinity : price;
+    let housings;
+    if (city && housingType) {
+      const dbReq = await pool.query(
+        'SELECT * FROM housings WHERE city = $1 AND housing_type = $2 AND price < $3',
+        [city, housingType, price]
+      );
+      housings = dbReq.rows;
+    } else if (city) {
+      const dbReq = await pool.query(
+        'SELECT * FROM housings WHERE city = $1 AND price < $2',
         [city, price]
       );
-      res.status(200).json(housings.rows);
+      housings = await dbReq.rows;
+    } else if (housingType) {
+      const dbReq = await pool.query(
+        'SELECT * FROM housings WHERE housing_type = $1 AND price < $2',
+        [housingType, price]
+      );
+      housings = dbReq.rows;
     } else {
-      const housings = await pool.query(
-        'SELECT * FROM housings WHERE price <= $1',
+      const dbReq = await pool.query(
+        'SELECT * FROM housings WHERE price < $1',
         [price]
       );
-      if (housings.rows) {
-        res.status(200).json(housings.rows);
-      } else {
-        res.status(200).json('No housing was found');
-      }
+      housings = dbReq.rows;
+    }
+
+    if (housings) {
+      res.status(200).json(housings);
+    } else {
+      res.status(200).json('No housing was found');
     }
   } catch (error) {
     res.status(400).json(error.message);
