@@ -6,16 +6,22 @@ const tableName = 'liked_housings';
 const getLikedHousing = asyncHandler(async (req, res) => {
   try {
     const userId = req.query.userId;
-    const housingId = req.query.housingId;
-    const findUser = await pool.query('SELECT * FROM users WHERE id = $1', [
-      userId,
-    ]);
-    const findHousing = await pool.query(
-      'SELECT * FROM housings WHERE id = $1',
-      [housingId]
+    const findByUser = await pool.query(
+      `SELECT * FROM ${tableName} WHERE user_id = $1`,
+      [userId]
     );
-    const housings = findHousing.rows;
-    res.status(200).json(housings);
+    const idsOfHousings = findByUser.rows.map((row) => row.housing_id);
+    const result = [];
+    for (const id of idsOfHousings) {
+      const findHousing = await pool.query(
+        'SELECT * FROM housings WHERE id = $1',
+        [id]
+      );
+      console.log(findHousing.rows[0]);
+      result.push(findHousing.rows[0]);
+    }
+
+    res.status(200).json({ result });
   } catch (error) {}
 });
 

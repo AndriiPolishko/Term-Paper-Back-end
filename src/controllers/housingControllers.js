@@ -3,7 +3,9 @@ const pool = require('../db/db');
 const getHousings = async (req, res) => {
   try {
     const { city, housingType } = req.query;
-    const price = req.query.price === undefined ? Infinity : price;
+    let { price } = req.query;
+
+    price = price === undefined ? Infinity : price;
     let housings;
     if (city && housingType) {
       const dbReq = await pool.query(
