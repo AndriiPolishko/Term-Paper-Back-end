@@ -16,7 +16,6 @@ const protect = asyncHandler(async (req, res, next) => {
       req.user = user.rows[0];
       next();
     } catch (error) {
-      console.log(error);
       res.status(401);
       throw new Error('Not authorized');
     }

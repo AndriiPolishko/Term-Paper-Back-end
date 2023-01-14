@@ -16,7 +16,6 @@ CREATE TABLE realtors (
   second_name VARCHAR(32),
   city VARCHAR(32),
   email VARCHAR(64),
-  password VARCHAR(100),
   score INT
 );
 
@@ -34,8 +33,9 @@ CREATE TABLE housings (
 
 CREATE TABLE liked_housings (
   id SERIAL PRIMARY KEY,
-  housing_id int,
-  user_id int,
-  CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
-  CONSTRAINT fk_housing FOREIGN KEY(housing_id) REFERENCES housings(id)
+  housing_id int REFERENCES housings(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  user_id int REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
+-- CONSTRAINT fk_housing FOREIGN KEY(housing_id) REFERENCES housings(id)

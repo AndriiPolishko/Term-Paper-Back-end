@@ -17,7 +17,6 @@ const getLikedHousing = asyncHandler(async (req, res) => {
         'SELECT * FROM housings WHERE id = $1',
         [id]
       );
-      console.log(findHousing.rows[0]);
       result.push(findHousing.rows[0]);
     }
 

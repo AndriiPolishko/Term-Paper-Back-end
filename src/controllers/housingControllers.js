@@ -5,7 +5,7 @@ const getHousings = async (req, res) => {
     const { city, housingType } = req.query;
     let { price } = req.query;
 
-    price = price === undefined ? Infinity : price;
+    price = !price || price === 'undefined' ? Infinity : price;
     let housings;
     if (city && housingType) {
       const dbReq = await pool.query(

@@ -21,11 +21,11 @@ const deleteUser = async (req, res) => {
 // @access  PUBLIC
 const signUp = asyncHandler(async (req, res) => {
   const { firstName, secondName, city, email, password } = req.body;
-
+  const isAdmin = req.body.isAdmin === undefined ? false : true;
   //need to rewrite
-  if (!firstName && !secondName && !city && !email && !password) {
+  if (!firstName || !secondName || !city || !email || !password) {
     res.status(400);
-    throw new Error('No user info given');
+    throw new Error('Please fill all fields');
   }
 
   const userExists = (
@@ -41,8 +41,8 @@ const signUp = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const user = await pool.query(
-    `INSERT INTO ${tableName} (first_name, second_name, city, email, password) VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-    [firstName, secondName, city, email, hashedPassword]
+    `INSERT INTO ${tableName} (first_name, second_name, city, email, password, is_admin) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [firstName, secondName, city, email, hashedPassword, isAdmin]
   );
   if (user) {
     res.status(201).json({
@@ -52,6 +52,7 @@ const signUp = asyncHandler(async (req, res) => {
       email,
       city,
       token: generateJWT(user.rows[0].id),
+      isAdmin,
     });
   } else {
     res.status(400);
@@ -80,6 +81,7 @@ const logIn = asyncHandler(async (req, res) => {
       email: user.email,
       city: user.city,
       token: generateJWT(user.id),
+      isAdmin: user.is_admin,
     });
   } else {
     res.status(401);
@@ -90,10 +92,23 @@ const logIn = asyncHandler(async (req, res) => {
 // @desc    Get info of logged in user
 // @route   POST /api/user/me
 // @access  PRIVATE
+const getAllUsers = async (req, res) => {
+  const users = await pool.query('SELECT * FROM users');
+  const userData = users.rows;
+  res.json(userData);
+};
+
+// @desc    Get info of logged in user
+// @route   POST /api/user/me
+// @access  PRIVATE
 const getUser = async (req, res) => {
   const { first_name, second_name, email } = req.user;
   res.json({ first_name, second_name, email });
 };
+
+// @desc    Update user by id
+// @route   POST /api/user/:id
+// @access  PRIVATE
 
 const updateUser = asyncHandler(async (req, res) => {
   try {
@@ -132,7 +147,6 @@ const updateUser = asyncHandler(async (req, res) => {
       user = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
     }
     const userData = user.rows[0];
-    console.log(userData);
 
     res.status(200).json({
       firstName: userData.first_name,
@@ -151,4 +165,4 @@ const generateJWT = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET); // can add third parameter for expiration period, like 30d
 };
 
-module.exports = { signUp, logIn, getUser, updateUser };
+module.exports = { getAllUsers, signUp, logIn, getUser, updateUser };

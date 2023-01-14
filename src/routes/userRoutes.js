@@ -5,6 +5,7 @@ const { protect } = require('../middleware/authMiddleware');
 const {
   signUp,
   logIn,
+  getAllUsers,
   getUser,
   updateUser,
   //  deleteUser,
@@ -12,6 +13,7 @@ const {
 
 router.post('/', signUp);
 router.post('/login', logIn);
+router.get('/', getAllUsers);
 router.get('/me', protect, getUser);
 router.put('/:id', protect, updateUser);
 
