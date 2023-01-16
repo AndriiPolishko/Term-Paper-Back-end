@@ -36,6 +36,3 @@ CREATE TABLE liked_housings (
   housing_id int REFERENCES housings(id) ON DELETE CASCADE ON UPDATE CASCADE,
   user_id int REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
--- CONSTRAINT fk_housing FOREIGN KEY(housing_id) REFERENCES housings(id)

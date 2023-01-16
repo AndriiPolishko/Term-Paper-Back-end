@@ -116,7 +116,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
     let user;
 
-    const { firstName, secondName, email, city, password } = req.body;
+    const { firstName, secondName, email, city } = req.body;
 
     if (firstName) {
       await pool.query(`UPDATE users SET first_name = $1 WHERE id = $2`, [
@@ -149,12 +149,46 @@ const updateUser = asyncHandler(async (req, res) => {
     const userData = user.rows[0];
 
     res.status(200).json({
+      id: userData.id,
       firstName: userData.first_name,
       secondName: userData.second_name,
       email: userData.email,
       city: userData.city,
-      token: generateJWT(userData.id),
+      token: generateJWT(user.id),
     });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+const updatePassword = asyncHandler(async (req, res) => {
+  try {
+    const { oldPassword, newPassword, email } = req.body;
+
+    const getUser = await pool.query(`SELECT * FROM users WHERE email = $1`, [
+      email,
+    ]);
+    const user = getUser.rows[0];
+    if (user && (await bcrypt.compare(oldPassword, user.password))) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      await pool.query(`UPDATE users SET password = $1 WHERE email = $2 `, [
+        hashedPassword,
+        email,
+      ]);
+      res.status(200).json({
+        id: user.id,
+        firstName: user.first_name,
+        secondName: user.second_name,
+        email: user.email,
+        city: user.city,
+        token: user.token,
+      });
+    } else {
+      res.status(400);
+      throw new Error('Wrong input data');
+    }
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
@@ -165,4 +199,11 @@ const generateJWT = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET); // can add third parameter for expiration period, like 30d
 };
 
-module.exports = { getAllUsers, signUp, logIn, getUser, updateUser };
+module.exports = {
+  getAllUsers,
+  signUp,
+  logIn,
+  getUser,
+  updateUser,
+  updatePassword,
+};
