@@ -45,14 +45,40 @@ const getHousings = async (req, res) => {
 
 const addHousing = async (req, res) => {
   try {
-    const { name, city, street, housingNumber, housingType, price } = req.body;
+    const {
+      name,
+      city,
+      street,
+      housingNumber,
+      housingType,
+      price,
+      ownerEmail,
+    } = req.body;
+
+    const realtor = await pool.query(
+      'SELECT * FROM realtors WHERE email = $1',
+      [ownerEmail]
+    );
+
+    if (realtor.rowCount == 0) {
+      res.status(400).json({ message: 'No realtor with such email' });
+    }
+
     await pool.query(
-      `INSERT INTO housings (name, city, street, housing_number, housing_type, price) VALUES ($1,$2,$3,$4,$5,$6)`,
-      [name, city, street, housingNumber, housingType, price]
+      `INSERT INTO housings (name, city, street, housing_number, housing_type, price, owner_id) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [
+        name,
+        city,
+        street,
+        housingNumber,
+        housingType,
+        price,
+        realtor.rows[0].id,
+      ]
     );
     res.status(201).json(`Housing was created`);
   } catch (error) {
-    res.status(400).json(error.message);
+    res.status(400).json({ message: error.message });
   }
 };
 

@@ -16,6 +16,7 @@ CREATE TABLE realtors (
   second_name VARCHAR(32),
   city VARCHAR(32),
   email VARCHAR(64),
+  all_scores INT ARRAY,
   score INT
 );
 
