@@ -9,7 +9,7 @@ const {
   getUser,
   updateUser,
   updatePassword,
-  //  deleteUser,
+  deleteUser,
 } = require('../controllers/userControllers');
 
 router.post('/', signUp);
@@ -18,5 +18,6 @@ router.get('/', getAllUsers);
 router.get('/me', protect, getUser);
 router.put('/:id', protect, updateUser);
 router.put('/password/:id', protect, updatePassword);
+router.delete('/', deleteUser);
 
 module.exports = router;

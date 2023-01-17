@@ -3,12 +3,13 @@ const router = express.Router();
 
 const {
   getRealtors,
-  getRealtorByName,
+  getRealtorByEmail,
   addRealtor,
   deleteRealtor,
 } = require('../controllers/realtorControllers');
 
 router.route('/').get(getRealtors).post(addRealtor);
-router.route('/:name').get(getRealtorByName).delete(deleteRealtor);
+router.route('/:email').get(getRealtorByEmail);
+router.delete('/', deleteRealtor);
 
 module.exports = router;

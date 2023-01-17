@@ -5,16 +5,6 @@ const asyncHandler = require('express-async-handler');
 
 const tableName = 'users';
 const database = process.env.DATABASE;
-/*
-const deleteUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
-    res.json('User was deleted');
-  } catch (error) {
-    console.log(error.message);
-  }
-}; */
 
 // @desc    Register a new user
 // @route   POST /api/user
@@ -195,6 +185,16 @@ const updatePassword = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteUser = async (req, res) => {
+  try {
+    const email = req.query.email;
+    await pool.query(`DELETE FROM users WHERE email = $1`, [email]);
+    res.json('User was deleted');
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const generateJWT = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET); // can add third parameter for expiration period, like 30d
 };
@@ -206,4 +206,5 @@ module.exports = {
   getUser,
   updateUser,
   updatePassword,
+  deleteUser,
 };
